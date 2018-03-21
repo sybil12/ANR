@@ -23,7 +23,7 @@ clear;
 p = pwd;
 addpath(fullfile(p, '/methods'));  % the upscaling methods
 
-%       % make sure you have make ompbox and ksvdbox already,  
+%       % make sure you have make ompbox and ksvdbox already,
 %       % if not run the code, and before make you should have a gcc compiler
 % addpath(fullfile(p, '/ksvdbox')) % K-SVD dictionary training algorithm
 % addpath(fullfile(p, '/ompbox')) % Orthogonal Matching Pursuit algorithm
@@ -61,11 +61,11 @@ for d=7  %choose the dict scale from dict_sizes
 
     mat_file = ['conf_Zeyde_' num2str(dict_sizes(d)) '_finalx' num2str(upscaling)];
 
-    % dict 
+    % dict
     if exist([mat_file '.mat'],'file')
         disp(['Load trained dictionary...' mat_file]);
         load(mat_file, 'conf');
-    else     %trian hr and lr dict 
+    else     %trian hr and lr dict
         disp(['Training dictionary of size ' num2str(dict_sizes(d)) ' using Zeyde approach...']);
         % Simulation settings
         conf.scale = upscaling; % scale-up factor
@@ -98,7 +98,7 @@ for d=7  %choose the dict scale from dict_sizes
 
         % train call
     end
-    
+
     % set lambda
     if dict_sizes(d) < 1024
         lambda = 0.01;
@@ -111,7 +111,7 @@ for d=7  %choose the dict scale from dict_sizes
     end
 
     % count ProjM and PP
-    if dict_sizes(d) < 10000            
+    if dict_sizes(d) < 10000
         %conf.ProjM = inv(conf.dict_lores'*conf.dict_lores+lambda*eye(size(conf.dict_lores,2)))*conf.dict_lores';
         conf.ProjM = (conf.dict_lores'*conf.dict_lores+lambda*eye(size(conf.dict_lores,2)))\conf.dict_lores';
 
@@ -123,7 +123,7 @@ for d=7  %choose the dict scale from dict_sizes
     end
 
     % get all img names from the dir (Cell array)
-    conf.filenames = glob(input_dir, pattern); 
+    conf.filenames = glob(input_dir, pattern);
     %conf.filenames = {conf.filenames{4}};
 
     %method name
@@ -132,15 +132,15 @@ for d=7  %choose the dict scale from dict_sizes
         'NE+LS','NE+NNLS','NE+LLE'};
     conf.results = {};
 
-    
+
     %conf.points = 1:10:size(conf.dict_lores,2);    % index of atoms
     conf.points = 1:1:size(conf.dict_lores,2);
-    
+
     conf.pointslo = conf.dict_lores(:,conf.points);
     conf.pointsloPCA = conf.pointslo'*conf.V_pca';
 
-    
-    % precompute for ANR the anchored neighborhoods and 
+
+    % precompute for ANR the anchored neighborhoods and
     % the projection matrices for the dictionary
 
     %% count PPs , project matrix when uses K neighbours for each atom
@@ -153,19 +153,19 @@ for d=7  %choose the dict scale from dict_sizes
     end
     D = abs(conf.pointslo'*conf.dict_lores);       % Correlation matrix
     %D = conf.pointslo'*conf.dict_lores;
-    
+
     % each cloumn in PPs is correspond to a atom in D_l
     for i = 1:length(conf.points)
-        [~,idx] = sort(D(i,:), 'descend');  % idx represent the origin index in i row of D 
+        [~,idx] = sort(D(i,:), 'descend');  % idx represent the origin index in i row of D
         if (clustersz >= size(conf.dict_lores,2)/2)
             conf.PPs{i} = conf.PP;
         else
-            Lo = conf.dict_lores(:, idx(1:clustersz)); 
+            Lo = conf.dict_lores(:, idx(1:clustersz));
             %conf.PPs{i} = 1.01*conf.dict_hires(:,idx(1:clustersz))*inv(Lo'*Lo+0.01*eye(size(Lo,2)))*Lo';
             conf.PPs{i} = 1.01*conf.dict_hires(:,idx(1:clustersz))/(Lo'*Lo+0.01*eye(size(Lo,2)))*Lo';
         end
     end
-    
+
     save([tag '_' mat_file '_ANR_projections_imgscale_' num2str(imgscale)],'conf'); %save current var -- conf
 
     %%
@@ -310,7 +310,7 @@ for d=7  %choose the dict scale from dict_sizes
         end
         conf.filenames{i} = f;
     end
-    
+
    %%
     conf.duration = cputime - t;  %time of duration for upscaling step
 
@@ -321,7 +321,7 @@ for d=7  %choose the dict scale from dict_sizes
     %run_comparisonRGB(conf); % provides color images and HTML summary
 
     save([tag '_' mat_file '_results_imgscale_' num2str(imgscale)],'conf');
-    
-    
+
+
 end
 %
