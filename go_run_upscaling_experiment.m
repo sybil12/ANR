@@ -174,12 +174,11 @@ for d=7  %choose the dict scale from dict_sizes
     conf.result_dir = qmkdir(['Results-' datestr(now, 'YYYY-mm-dd_HH-MM-SS')]);
     conf.result_dirRGB = qmkdir(['ResultsRGB-' datestr(now, 'YYYY-mm-dd_HH-MM-SS')]);
 
+   %% upscaling i_th image
     t = cputime;
-
     conf.countedtime = zeros(numel(conf.desc),numel(conf.filenames)); %desc-- methods names; filenames-- imags names
 
     res =[];
-    %% upscaling i_th image
     for i = 1:numel(conf.filenames)
         f = conf.filenames{i};
         [p, n, x] = fileparts(f);
